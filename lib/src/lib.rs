@@ -3,6 +3,7 @@ use std::fs::File;
 use std::io;
 use std::io::{BufRead, BufReader};
 
+#[derive(Debug)]
 pub struct Config {
     pub recherche : String,
     pub fichier : String,
@@ -62,19 +63,28 @@ pub fn recherche(config: &Config, contenu : BufReader<&mut File>) -> HashMap<usi
         let value = value.ok().unwrap();
         if value.contains(&config.recherche) {
             result.insert(line, value);
-        };
+        }
     }
 
     return result;
 }
 
+pub fn presentation(resultat: HashMap<usize, String>, config: &Config) {
+    if resultat.len() == 0  {
+        println!("il n'y a pas le mot: {} dans le fichier: {}", config.recherche, config.fichier);
+    }
+    for line in resultat {
+        println!("A la ligne {} : {}", line.0 + 1, line.1);
+    }
+}
+
 #[cfg(test)]
-mod tests {
+mod testing {
     use std::fs::{self, metadata};
     use super::*;
 
     fn set_config() -> Config {
-        let config = Config::new(&["".to_string(), "derek".to_string(), "src/derek.txt".to_string()]).expect("une erreur est survenue");
+        let config = Config::new(&["".to_string(), "kouakou".to_string(), "src/derek.txt".to_string()]).expect("une erreur est survenue");
         config
     }
 
@@ -91,6 +101,14 @@ mod tests {
     fn test_lecture() {
         let mut file = File::open(set_config().get_fichier()).unwrap();
         let result = lecture(&mut file);
-        assert_eq!(result.lines().count(), 3 );
+        assert_eq!(result.lines().count(), 5);
+    }
+
+    #[test]
+    fn test_recherche() {
+        let mut file = File::open("./src/derek.txt").unwrap();
+        let result = BufReader::new(&mut file);
+        let result = recherche(&set_config(), result);
+        assert_eq!(result.len(), 5);
     }
 }
