@@ -1,12 +1,13 @@
 use std::collections::HashMap;
 use std::fs::File;
-use std::io;
+use std::{env, io};
 use std::io::{BufRead, BufReader};
 
 #[derive(Debug)]
 pub struct Config {
     pub recherche : String,
     pub fichier : String,
+    pub is_sensitive : bool,
 }
 
 impl Config {
@@ -16,10 +17,12 @@ impl Config {
         }
         let recherche = &args[1];
         let fichier = &args[2];
+        let is_sensible = env::var("SENSIBLE_CASE").is_err();
 
         Ok(Config {
             recherche : recherche.to_string(),
             fichier : fichier.to_string(),
+            is_sensitive:is_sensible
         })
     }
 
@@ -55,7 +58,6 @@ pub fn lecture(file: &mut File) -> BufReader<&mut File> {
      return reader;
 }
 
-
 pub fn recherche(config: &Config, contenu : BufReader<&mut File>) -> HashMap<usize, String> {
     let mut result = HashMap::new();
 
@@ -76,6 +78,21 @@ pub fn presentation(resultat: HashMap<usize, String>, config: &Config) {
     for line in resultat {
         println!("A la ligne {} : {}", line.0 + 1, line.1);
     }
+}
+
+pub fn sensitive_fun(config: &Config, contenu : BufReader<&mut File>) -> HashMap<usize, String>{
+    let mut result = HashMap::new();
+
+    let recherche = config.recherche.to_lowercase();
+
+    for (line, value) in contenu.lines().enumerate() {
+        let value_clone= value.ok().unwrap().clone();
+        let value_lower = value_clone.to_lowercase();
+        if value_lower.contains(&recherche) {
+            result.insert(line, value_clone);
+        }
+    }
+    return result;
 }
 
 #[cfg(test)]

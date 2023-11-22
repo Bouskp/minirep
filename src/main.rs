@@ -2,7 +2,7 @@ extern crate lib;
 
 use std::{env, process};
 use std::error::Error;
-use lib::{Config, lecture, ouverture, presentation, recherche};
+use lib::{Config, lecture, ouverture, presentation, recherche, sensitive_fun};
 
 fn main() {
     let args : Vec<String>= env::args().collect();
@@ -20,9 +20,15 @@ fn main() {
 
 fn run(config: &Config) -> Result<(), Box<dyn Error>> {
     let mut file = ouverture(config)?;
+    let result;
 
     let buff_reader = lecture(&mut file);
-    let result = recherche(&config, buff_reader);
+    if config.is_sensitive {
+         result = recherche(&config, buff_reader);
+
+    } else {
+         result = sensitive_fun(&config, buff_reader);
+    }
     presentation(result, &config);
     Ok(())
 }
