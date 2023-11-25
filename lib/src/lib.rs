@@ -12,6 +12,7 @@ pub struct Config {
 
 impl Config {
     pub fn new(args : &[String]) -> Result<Config, &'static str> {
+        println!("{:?}", env::var("SENSIBLE_CASE").unwrap().is_empty());
         if args.len() < 3  {
             return Err("il n'y a pas assez de paramètres.");
         }

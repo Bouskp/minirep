@@ -11,6 +11,7 @@ fn main() {
         println!("Erreur survenu lors de la lecture des paramètres: {}", err);
         process::exit(0);
     });
+    println!("{:?}", config);
 
     if let Err(e) = run(&config) {
         println!("Erreur applicative : {}", e.to_string());
