@@ -12,13 +12,12 @@ pub struct Config {
 
 impl Config {
     pub fn new(args : &[String]) -> Result<Config, &'static str> {
-        println!("{:?}", env::var("SENSIBLE_CASE").unwrap().is_empty());
         if args.len() < 3  {
             return Err("il n'y a pas assez de paramètres.");
         }
         let recherche = &args[1];
         let fichier = &args[2];
-        let is_sensible = env::var("SENSIBLE_CASE").is_err();
+        let is_sensible = env::var("SENSIBLE_CASE").is_ok();
 
         Ok(Config {
             recherche : recherche.to_string(),
@@ -81,7 +80,7 @@ pub fn presentation(resultat: HashMap<usize, String>, config: &Config) {
     }
 }
 
-pub fn sensitive_fun(config: &Config, contenu : BufReader<&mut File>) -> HashMap<usize, String>{
+pub fn sensitive_func(config: &Config, contenu : BufReader<&mut File>) -> HashMap<usize, String>{
     let mut result = HashMap::new();
 
     let recherche = config.recherche.to_lowercase();
